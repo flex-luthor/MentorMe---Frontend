@@ -157,7 +157,6 @@ export default function SignInSide() {
           setToDashboard(true);
           setCookie("authToken", response.data.authToken, { path: "/" });
           setCookie("userId", response.data.userId, { path: "/" });
-
         }
       });
   }

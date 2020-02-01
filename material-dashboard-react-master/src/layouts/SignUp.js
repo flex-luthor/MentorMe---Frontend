@@ -156,6 +156,7 @@ export default function SignInSide() {
         if (response.data.success === false) {
           alert("Error: " + response.data.msg)
         } else {
+
           setRegSuccess(true);
           setReg(false);
           setTimeout(() => {

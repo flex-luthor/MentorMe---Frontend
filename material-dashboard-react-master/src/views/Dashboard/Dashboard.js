@@ -67,6 +67,9 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 
 import { useCookies } from "react-cookie";
 import { Redirect } from "react-router-dom";
+import pulse from "../../assets/img/pulse.svg"
+import { render } from "@testing-library/react";
+
 
 const useStyles = makeStyles(styles);
 
@@ -138,6 +141,7 @@ function Action(params) {
   }
 }
 
+
 export default function Dashboard() {
 
 
@@ -188,31 +192,31 @@ export default function Dashboard() {
   const searchMentor = (data) => {
     setSearchSetup(true);
     setSkill(data.label);
-    var inter = setInterval(() => {
-      axios({
-        method: 'post',
-        url: "http://localhost:5000/api/mentee/newmentor",
-        data: data.label,
-        headers: { 'authToken': cookies.authToken }
-      }).then(response => {
-        console.log(response);
-        if (response.success) {
-          mentor = response.mentorId;
-        }
-      });
-    }, 1000);
+    axios({
+      method: 'post',
+      url: "http://localhost:5000/api/mentee/newmentor",
+      data: { skill: data.label, userId: cookies.userId },
+      headers: { 'authToken': cookies.authToken }
+    }).then(response => {
+      console.log(response);
+      if (response.success) {
+        mentor = response.mentorId;
+      }
+    });
+
+
+    var email;
+
     var progressBar = 10;
     var pro = setInterval(() => {
       progressBar++;
       setProgress(progressBar);
     }, 100);
+
     setTimeout(() => {
       clearInterval(pro);
       setProgress(100)
     }, 9 * 1000);
-    setTimeout(() => {
-      clearInterval(inter);
-    }, 30 * 1000);
   }
 
   // const searchLoop = (data) => {
@@ -224,6 +228,10 @@ export default function Dashboard() {
 
   if (!cookies.authToken) {
     return <Redirect to="/login" />
+  }
+
+  if (progress === 100) {
+    return <Redirect to="/admin/table" />
   }
 
   return (
@@ -239,25 +247,28 @@ export default function Dashboard() {
             </CardHeader>
             <CardBody>
               <h4 className={classes.cardTitle}>Recommended Subjects:</h4>
-              {chipData.map(data => {
-                if (searchFunction(data.label)) {
-                  reco++;
-                  return (
-                    <ThemeProvider theme={greenTheme}>
-                      <Chip
-                        key={data.key}
-                        label={data.label}
-                        size="small"
-                        clickable
-                        style={{ margin: '5px', padding: '3px' }}
-                        color="primary"
-                        onClick={() => searchMentor(data)}
-                      />
-                    </ThemeProvider>
-                  );
-                }
+              {
+                chipData.map(data => {
+                  if (searchFunction(data.label)) {
+                    reco++;
+                    return (
+                      <ThemeProvider theme={greenTheme}>
+                        <Chip
+                          key={data.key}
+                          label={data.label}
+                          size="small"
+                          clickable
+                          style={{ margin: '5px', padding: '3px' }}
+                          color="primary"
+                          onClick={() => searchMentor(data)}
+                        />
+                      </ThemeProvider>
+                    );
+                  }
 
-              })}
+                })
+              }
+
             </CardBody>
             <CardFooter chart>
               <div className={classes.stats}>
